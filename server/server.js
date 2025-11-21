@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import { connectDB } from "./config/database";
+import { connectDB } from "./config/database.js";
 import cors from "cors";
-import errorHandler from "./middleware/error";
+import errorHandler from "./middleware/error.js";
 import userRouter from "./routes/users.js";
 
 const startServer = async () => {
