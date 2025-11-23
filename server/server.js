@@ -13,7 +13,7 @@ const startServer = async () => {
   await connectDB();
   const PORT = process.env.PORT;
   const app = express();
-  app.use(cors({ origin: true }));
+  app.use(cors({ origin: true, credentials: true }));
   app.use(express.json()); //middleware that check raw body, checks whether the Content-Type is application/json. parses the JSON into a javascript object
 
   app.use(
