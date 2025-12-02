@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../css/Auth.css";
 
-function Login() {
+function Register() {
   const [formData, setFormData] = useState({
     email: "",
+    username: "",
     password: "",
   });
 
@@ -15,7 +16,7 @@ function Login() {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
   };
 
@@ -31,48 +32,61 @@ function Login() {
           ></img>
         </div>
         <div className="info-login">
-          <h2>Logga in</h2>
-          <p>Fortsätt till Blocket.</p>
+          <h2>Skapa ett konto</h2>
+          <p>Fortsätt till Blocket</p>
         </div>
 
-        <form className="form" onSubmit={handleLogin}>
+        <form className="form" onSubmit={handleRegister}>
           <div className="form-group">
-            <label htmlFor="email">Mejladdress:</label>
+            <label htmlFor="email">Mejladress</label>
             <input
               type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Ange din mailaddress"
+              placeholder="Enter your email address"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Lösenord:</label>
+            <label htmlFor="username">Användarnamn</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter your username"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Lösenord</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Ange ditt lösenord"
+              placeholder="Enter your password"
             />
           </div>
           <button
             type="submit"
             className="form-btn"
-            disabled={!formData.email || !formData.password}
+            disabled={
+              !formData.email || !formData.username || !formData.password
+            }
           >
-            Logga in
+            Register
           </button>
         </form>
 
         <p className="auth-link">
-          <strong>Inte registrerat dig ännu?</strong>{" "}
-          <Link to={"/register"}>Skapa ett konto</Link>
+          <strong>Har du redan ett konto?</strong>{" "}
+          <Link to={"/login"}>Logga in</Link>
         </p>
       </main>
     </div>
   );
 }
 
-export default Login;
+export default Register;

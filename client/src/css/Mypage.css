@@ -1,0 +1,69 @@
+.mypage {
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.mypage a {
+  text-decoration: none;
+  color: none;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.info-section-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-amount {
+  font-weight: bold;
+  color: hsla(217, 100%, 50%, 0.829);
+}
+
+.show-profile {
+  color: hsla(217, 100%, 50%, 0.829);
+}
+
+.info-section-about {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.info-section-credentials-reviews {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* .box {
+  display: flex;
+  gap: 1rem;
+} */
+
+.box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.box-card {
+  border: 1px solid #e0e0e0;
+  padding: 2rem;
+}
+
+.box-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.box-title img {
+  width: 50px;
+}
