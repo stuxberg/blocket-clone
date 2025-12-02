@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { validateLoginForm } from "../utils/validation";
 import "../css/Auth.css";
 
 function Login() {
@@ -7,6 +8,8 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const [formErrors, setFormErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData({
@@ -17,6 +20,13 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
+
+    const { errors, isValid } = validateLoginForm(formData);
+    setFormErrors(errors);
+
+    if (!isValid) {
+      return;
+    }
   };
 
   return (
@@ -45,6 +55,7 @@ function Login() {
               onChange={handleChange}
               placeholder="Ange din mailaddress"
             />
+            <p>{formErrors.email}</p>
           </div>
 
           <div className="form-group">
@@ -56,7 +67,9 @@ function Login() {
               onChange={handleChange}
               placeholder="Ange ditt lösenord"
             />
+            <p>{formErrors.password}</p>
           </div>
+
           <button
             type="submit"
             className="form-btn"

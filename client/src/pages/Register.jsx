@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { validateRegisterForm } from "../utils/validation";
 import "../css/Auth.css";
 
 function Register() {
@@ -7,7 +8,10 @@ function Register() {
     email: "",
     username: "",
     password: "",
+    confirmPassword: "",
   });
+
+  const [formErrors, setFormErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData({
@@ -18,6 +22,16 @@ function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
+
+    const { errors, isValid } = validateRegisterForm(formData);
+    setFormErrors(errors);
+
+    if (!isValid) {
+      return;
+    }
+
+    // TODO: Submit form to backend
+    console.log("Form is valid, submitting:", formData);
   };
 
   return (
@@ -44,8 +58,9 @@ function Register() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email address"
+              placeholder="Ange din mejladress"
             />
+            <p>{formErrors.email}</p>
           </div>
 
           <div className="form-group">
@@ -55,8 +70,9 @@ function Register() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="Enter your username"
+              placeholder="Ange ditt användarnamn"
             />
+            <p>{formErrors.username}</p>
           </div>
 
           <div className="form-group">
@@ -66,17 +82,34 @@ function Register() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="Ange ditt lösenord"
             />
+            <p>{formErrors.password}</p>
           </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Bekräfta lösenord</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Bekräfta ditt lösenord"
+            />
+            <p>{formErrors.confirmPassword}</p>
+          </div>
+
           <button
             type="submit"
             className="form-btn"
             disabled={
-              !formData.email || !formData.username || !formData.password
+              !formData.email ||
+              !formData.username ||
+              !formData.password ||
+              !formData.confirmPassword
             }
           >
-            Register
+            Skapa konto
           </button>
         </form>
 

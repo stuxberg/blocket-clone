@@ -13,14 +13,14 @@ function Navbar() {
             <span className="navbar-icon">🔔</span>
             <span className="navbar-text">Notiser</span>
           </button>
-          <button className="navbar-item">
+          <Link to="/create" className="navbar-item">
             <span className="navbar-icon">➕</span>
             <span className="navbar-text">Ny annons</span>
-          </button>
-          <button className="navbar-item">
+          </Link>
+          <Link to="/messages" className="navbar-item">
             <span className="navbar-icon">💬</span>
             <span className="navbar-text">Meddelanden</span>
-          </button>
+          </Link>
           <Link to="/login" className="navbar-item navbar-login">
             <span className="navbar-icon">👤</span>
             <span className="navbar-text">Logga in</span>
