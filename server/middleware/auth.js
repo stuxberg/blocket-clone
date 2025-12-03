@@ -1,27 +1,53 @@
+import { setRefreshTokenCookie } from "../utils/cookieHelpers.js";
 import passport from "passport";
 
 export const authenticateLocal = (req, res, next) => {
-  passport.authenticate("local", (error, user, info) => {
+  passport.authenticate("local", { session: false }, (error, user, info) => {
     if (error) {
       return next(error);
     }
     if (!user) {
-      // return res
-      //   .status(401)
-      //   .json({ message: info?.message || "Authorization failed" });
-
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         message: info?.message || "Invalid credentials",
       });
     }
 
-    req.login(user, (error) => {
-      if (error) {
-        return next(error);
-      }
+    const { accessToken, refreshToken } = info;
 
-      next();
+    setRefreshTokenCookie(res, refreshToken);
+
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+      accessToken: accessToken,
+      success: true,
+      message: "Logged in succesfully",
+    });
+  })(req, res, next);
+};
+
+export const authenticateJWT = (req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (error, user, info) => {
+    if (error) {
+      return next(error);
+    }
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: info?.message || "Invalid or expired token",
+      });
+    }
+
+    req.logIn(user, { session: false }, (err) => {
+      if (err) {
+        return next(err);
+      }
+      // Successful auth: proceed to next middleware/controller
+      return next();
     });
   })(req, res, next);
 };
