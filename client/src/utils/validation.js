@@ -9,7 +9,7 @@ export const validateEmail = (email) => {
 };
 
 export const validatePassword = (password, options = {}) => {
-  const { minLength = 6, requireSpecialChar = false } = options;
+  const { minLength = 3, requireSpecialChar = false } = options;
 
   if (!password) return "Lösenord är obligatoriskt";
 

@@ -1,8 +1,10 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import "../css/Mypage.css";
+import { useAuthContext } from "../context/AuthContext";
 
 function Mypage() {
+  const { user, logout } = useAuthContext();
   return (
     <>
       <div className="mypage">
@@ -11,32 +13,34 @@ function Mypage() {
           <div className="info-section">
             <div className="info-section-nav">
               <h1>Mitt Blocket</h1>
-              <a href="http://">Logga ut</a>
+              <button onClick={logout} className="logout-button">
+                Logga ut
+              </button>
             </div>
             <div className="info-section-about">
               <img
-                class="w-128 h-128 rounded-full max-w-none"
+                className="w-128 h-128 rounded-full max-w-none"
                 src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
                 alt="Profilbild för Albin"
               ></img>
               <div className="info-section-credentials">
-                <h2>USER</h2>
-                <div>albin.stuxberg@gmail.com</div>
+                <h2>{user.username}</h2>
+                <div>{user.email}</div>
                 <div className="info-section-credentials-reviews">
-                  <div class="flex rounded-full items-center rounded-20 p-0 justify-center min-h-[30px] min-w-[30px] s-bg-primary s-text-inverted text-caption font-bold">
+                  <div className="flex rounded-full items-center rounded-20 p-0 justify-center min-h-[30px] min-w-[30px] s-bg-primary s-text-inverted text-caption font-bold">
                     10
                   </div>
                   <a
                     href="/my-reviews"
                     aria-details="my-reviews-highlight"
-                    class="review-amount"
+                    className="review-amount"
                   >
                     1 omdöme
                   </a>
                 </div>
                 <a
                   href="/profile/ads?userId=781437496"
-                  class="show-profile"
+                  className="show-profile"
                   role="button"
                 >
                   Visa profil
@@ -51,7 +55,7 @@ function Mypage() {
                 <div className="box-container">
                   <div className="box-title">
                     <img
-                      class="w-128 h-128 rounded-full max-w-none"
+                      className="w-128 h-128 rounded-full max-w-none"
                       src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
                       alt="Profilbild för Albin"
                     ></img>
@@ -66,7 +70,7 @@ function Mypage() {
                 <div className="box-container">
                   <div className="box-title">
                     <img
-                      class="w-128 h-128 rounded-full max-w-none"
+                      className="w-128 h-128 rounded-full max-w-none"
                       src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
                       alt="Profilbild för Albin"
                     ></img>
@@ -81,7 +85,7 @@ function Mypage() {
                 <div className="box-container">
                   <div className="box-title">
                     <img
-                      class="w-128 h-128 rounded-full max-w-none"
+                      className="w-128 h-128 rounded-full max-w-none"
                       src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
                       alt="Profilbild för Albin"
                     ></img>

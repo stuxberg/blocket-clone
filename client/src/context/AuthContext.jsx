@@ -9,7 +9,7 @@ import api from "../api/users";
 
 const AuthContext = createContext(null);
 
-export const useAuthContext = useContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
@@ -20,20 +20,11 @@ export const AuthProvider = ({ children }) => {
   // Initialize auth on mount - call /me endpoint
   useEffect(() => {
     const fetchMe = async () => {
-      const hasRefreshToken = document.cookie.includes("Authorization=");
-
-      if (!hasRefreshToken) {
-        // No cookie = first-time visitor, don't make request
-        setAccessToken(null);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
       try {
         const response = await api.post("/refresh");
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
-      } catch (error) {
+      } catch {
         setAccessToken(null);
         setUser(null);
       } finally {
@@ -78,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
           try {
             // Call refresh endpoint to get new access token
-            const response = await api.get("/refresh");
+            const response = await api.post("/refresh");
 
             // Update token in state
             setAccessToken(response.data.accessToken);

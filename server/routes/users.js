@@ -15,6 +15,7 @@ import {
 import {
   createAccessToken,
   createRefreshToken,
+  createTokenHash,
   saveRefreshToken,
   verifyRefreshToken,
 } from "../utils/tokenHelpers.js";
@@ -35,7 +36,7 @@ router.get("/me", authenticateJWT, (req, res) => {
 
 router.post("/refresh", async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.Authorization;
+    const refreshToken = req.cookies.refresh_token;
 
     if (!refreshToken) {
       return res.status(401).json({
@@ -44,7 +45,7 @@ router.post("/refresh", async (req, res, next) => {
       });
     }
 
-    const checkRefreshToken = verifyRefreshToken(refreshToken);
+    const checkRefreshToken = await verifyRefreshToken(refreshToken);
 
     if (!checkRefreshToken) {
       return res
@@ -62,7 +63,7 @@ router.post("/refresh", async (req, res, next) => {
       });
     }
 
-    const newAccessToken = createAccessToken();
+    const newAccessToken = createAccessToken(userId);
     const newRefreshToken = createRefreshToken();
     await RefreshToken.deleteOne({ _id: checkRefreshToken._id });
     await saveRefreshToken(newRefreshToken, userId);
@@ -98,15 +99,30 @@ router.post(
   loginController
 );
 
-router.post("/logout", (req, res, next) => {
-  if (!req.user) return res.sendStatus(401);
+router.post("/logout", authenticateJWT, async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
 
-  req.logout((error) => {
-    if (error) {
-      return next(error);
+    // Delete refresh token from database
+    if (refreshToken) {
+      const tokenHash = createTokenHash(refreshToken);
+      await RefreshToken.deleteOne({ token: refreshToken });
     }
-    res.status(200).json("Logged out successfully");
-  });
+
+    // Clear the refresh token cookie
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

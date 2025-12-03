@@ -1,5 +1,5 @@
 export const setRefreshTokenCookie = (res, refreshToken) => {
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie("refresh_token", refreshToken, {
     httpOnly: true, // Not accessible via JavaScript
     secure: process.env.NODE_ENV === "production", // Only HTTPS in production
     sameSite: "strict", // CSRF protection

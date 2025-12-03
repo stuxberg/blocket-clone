@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { connectDB } from "./config/database.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/error.js";
 import userRouter from "./routes/users.js";
 import passport from "passport";
@@ -14,7 +15,7 @@ const startServer = async () => {
   const app = express();
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.json()); //middleware that check raw body, checks whether the Content-Type is application/json. parses the JSON into a javascript object
-
+  app.use(cookieParser());
   app.use(passport.initialize());
 
   app.use("/api/auth", userRouter);

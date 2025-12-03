@@ -42,12 +42,8 @@ export const authenticateJWT = (req, res, next) => {
       });
     }
 
-    req.logIn(user, { session: false }, (err) => {
-      if (err) {
-        return next(err);
-      }
-      // Successful auth: proceed to next middleware/controller
-      return next();
-    });
+    // Set user on request object
+    req.user = user;
+    return next();
   })(req, res, next);
 };

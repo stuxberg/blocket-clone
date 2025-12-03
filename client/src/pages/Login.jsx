@@ -35,8 +35,11 @@ function Login() {
     }
 
     try {
+      setLoading(true);
+      setError(null);
       const data = await loginApi(formData);
       login(data.accessToken, data.user);
+      navigate("/");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Login failed. Please try again.";
@@ -92,6 +95,8 @@ function Login() {
           >
             Logga in
           </button>
+
+          {error && <p>{error}</p>}
         </form>
 
         <p className="auth-link">

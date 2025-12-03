@@ -20,11 +20,30 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/" element={<Home />}></Route>
 
-          <ProtectedRoute>
-            <Route path="/my-page" element={<Mypage />}></Route>
-            <Route path="/messages" element={<Messages />}></Route>
-            <Route path="/create" element={<CreateListing />}></Route>
-          </ProtectedRoute>
+          <Route
+            path="/my-page"
+            element={
+              <ProtectedRoute>
+                <Mypage />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <CreateListing />
+              </ProtectedRoute>
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
