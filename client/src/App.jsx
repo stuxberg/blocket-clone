@@ -8,19 +8,26 @@ import Home from "./pages/Home";
 import Mypage from "./pages/Mypage";
 import Messages from "./pages/Messages";
 import CreateListing from "./pages/CreateListing";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/my-page" element={<Mypage />}></Route>
-        <Route path="/messages" element={<Messages />}></Route>
-        <Route path="/create" element={<CreateListing />}></Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
+          <Route path="/" element={<Home />}></Route>
+
+          <ProtectedRoute>
+            <Route path="/my-page" element={<Mypage />}></Route>
+            <Route path="/messages" element={<Messages />}></Route>
+            <Route path="/create" element={<CreateListing />}></Route>
+          </ProtectedRoute>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

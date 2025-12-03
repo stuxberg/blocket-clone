@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateLoginForm } from "../utils/validation";
 import "../css/Auth.css";
+import { useAuthContext } from "../context/AuthContext";
+import { loginApi } from "../services/api";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -9,7 +11,11 @@ function Login() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+  const { login } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -18,7 +24,7 @@ function Login() {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     const { errors, isValid } = validateLoginForm(formData);
@@ -26,6 +32,15 @@ function Login() {
 
     if (!isValid) {
       return;
+    }
+
+    try {
+      const data = await loginApi(formData);
+      login(data.accessToken, data.user);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
     }
   };
 

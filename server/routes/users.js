@@ -22,10 +22,14 @@ import { User } from "../models/user.js";
 import { RefreshToken } from "../models/refreshToken.js";
 import { setRefreshTokenCookie } from "../utils/cookieHelpers.js";
 
-router.get("/status", authenticateJWT, (req, res) => {
+router.get("/me", authenticateJWT, (req, res) => {
   return res.status(200).json({
     success: true,
-    user: req.user._id,
+    user: {
+      id: req.user._id,
+      email: req.user.email,
+      username: req.user.username,
+    },
   });
 });
 
