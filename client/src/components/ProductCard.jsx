@@ -12,7 +12,11 @@ function ProductCard({ product }) {
     <div className="product-card">
       <div className="product-image-container">
         <img
-          src={product.image}
+          src={
+            product.images?.[0] ||
+            product.image ||
+            "https://via.placeholder.com/400x300"
+          }
           alt={product.title}
           className="product-image"
         />
@@ -25,8 +29,14 @@ function ProductCard({ product }) {
       </div>
       <div className="product-info">
         <h3 className="product-title">{product.title}</h3>
-        <p className="product-price">{product.price}</p>
-        <p className="product-location">{product.location}</p>
+        <p className="product-price">
+          {typeof product.price === "number"
+            ? `${product.price} kr`
+            : product.price}
+        </p>
+        <p className="product-location">
+          {product.location?.postalCode || product.location}
+        </p>
       </div>
     </div>
   );

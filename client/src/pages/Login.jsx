@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { validateLoginForm } from "../utils/validation";
 import "../css/Auth.css";
 import { useAuthContext } from "../context/AuthContext";
-import { loginApi } from "../services/api";
+import { loginApi } from "../services/authAPI";
 
 function Login() {
   const [formData, setFormData] = useState({

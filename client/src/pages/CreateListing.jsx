@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import "../css/CreateListing.css";
+import { createListing } from "../services/listingAPI";
+import { useNavigate } from "react-router-dom";
 
 function CreateListing() {
   const [formData, setFormData] = useState({
@@ -12,6 +14,33 @@ function CreateListing() {
     postalCode: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await createListing(formData);
+
+      navigate("/");
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Creating listing failed. Please try again.";
+      setError(errorMessage);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -19,7 +48,7 @@ function CreateListing() {
         <div className="create-listing-container">
           <h1 className="create-listing-title">Torget</h1>
 
-          <form className="create-listing-form">
+          <form className="create-listing-form" onSubmit={handleSubmit}>
             {/* Image Upload Section */}
             <div className="form-section">
               <label className="form-label">Bilder</label>
@@ -41,6 +70,7 @@ function CreateListing() {
               <select
                 name="category"
                 value={formData.category}
+                onChange={handleChange}
                 className="form-select"
               >
                 <option value="">Välj kategori</option>
@@ -62,6 +92,7 @@ function CreateListing() {
                 type="text"
                 name="title"
                 value={formData.title}
+                onChange={handleChange}
                 className="form-input"
               />
             </div>
@@ -72,6 +103,7 @@ function CreateListing() {
               <textarea
                 name="description"
                 value={formData.description}
+                onChange={handleChange}
                 className="form-textarea"
                 rows="6"
               ></textarea>
@@ -85,6 +117,7 @@ function CreateListing() {
                   type="number"
                   name="price"
                   value={formData.price}
+                  onChange={handleChange}
                   className="form-input price-input"
                 />
                 <span className="price-currency">kr</span>
@@ -99,6 +132,7 @@ function CreateListing() {
                 type="text"
                 name="postalCode"
                 value={formData.postalCode}
+                onChange={handleChange}
                 className="form-input postal-input"
                 maxLength="5"
               />

@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/error.js";
 import userRouter from "./routes/users.js";
+import listingsRouter from "./routes/listings.js";
 import passport from "passport";
 import "./config/local-strategy.js";
 import "./config/jwt-strategy.js";
@@ -19,6 +20,7 @@ const startServer = async () => {
   app.use(passport.initialize());
 
   app.use("/api/auth", userRouter);
+  app.use("/api/listings", listingsRouter);
 
   app.use(errorHandler);
 

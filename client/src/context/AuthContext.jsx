@@ -5,7 +5,7 @@ import {
   useEffect,
   useLayoutEffect,
 } from "react";
-import api from "../api/users";
+import api from "../api/client";
 
 const AuthContext = createContext(null);
 
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const response = await api.post("/refresh");
+        const response = await api.post("/auth/refresh");
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
       } catch {
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
           try {
             // Call refresh endpoint to get new access token
-            const response = await api.post("/refresh");
+            const response = await api.post("/auth/refresh");
 
             // Update token in state
             setAccessToken(response.data.accessToken);
@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setError(null);
-      await api.post("/logout");
+      await api.post("/auth/logout");
     } catch (error) {
       console.error("Logout failed:", error);
       setError("Logout request failed, but you've been logged out locally.");

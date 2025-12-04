@@ -8,17 +8,19 @@ import Home from "./pages/Home";
 import Mypage from "./pages/Mypage";
 import Messages from "./pages/Messages";
 import CreateListing from "./pages/CreateListing";
+import ProductPage from "./pages/ProductPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/" element={<Home />}></Route>
+          <Route path="/listing/:id" element={<ProductPage />}></Route>
 
           <Route
             path="/my-page"
@@ -45,8 +47,8 @@ function App() {
             }
           ></Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

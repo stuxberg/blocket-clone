@@ -2,9 +2,16 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import "../css/Mypage.css";
 import { useAuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Mypage() {
   const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    navigate("/");
+    await logout();
+  };
   return (
     <>
       <div className="mypage">
@@ -13,7 +20,7 @@ function Mypage() {
           <div className="info-section">
             <div className="info-section-nav">
               <h1>Mitt Blocket</h1>
-              <button onClick={logout} className="logout-button">
+              <button onClick={handleLogout} className="logout-button">
                 Logga ut
               </button>
             </div>

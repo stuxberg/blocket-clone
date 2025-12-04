@@ -66,6 +66,11 @@
   gap: 1.5rem;
 }
 
+.products-grid > a {
+  display: block;
+  min-width: 0;
+}
+
 @media (max-width: 1024px) {
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
