@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   useLayoutEffect,
+  useRef,
 } from "react";
 import api from "../api/client";
 
@@ -16,6 +17,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // Loading for initial auth check
   const [error, setError] = useState(null); // Error for auth operations (logout, token refresh)
+
+  // Ref to hold current token - interceptor reads from this
+  const accessTokenRef = useRef(null);
+
+  // Sync ref whenever accessToken changes
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
 
   // Initialize auth on mount - call /me endpoint
   useEffect(() => {
@@ -35,22 +44,23 @@ export const AuthProvider = ({ children }) => {
     fetchMe();
   }, []);
 
-  // Request interceptor - add Authorization header to all requests
+  // Request interceptor - set up ONCE, reads from ref (always up-to-date)
   useEffect(() => {
     const authInterceptor = api.interceptors.request.use((config) => {
-      // Don't add header if it's a retry or if no token
+      // Read current token from ref - always gets latest value
+      const currentToken = accessTokenRef.current;
       config.headers.Authorization =
-        !config._retry && accessToken
-          ? `Bearer ${accessToken}`
+        !config._retry && currentToken
+          ? `Bearer ${currentToken}`
           : config.headers.Authorization;
       return config;
     });
 
-    // Cleanup: remove interceptor when component unmounts or token changes
+    // Cleanup: only eject on unmount (not on token change)
     return () => {
       api.interceptors.request.eject(authInterceptor);
     };
-  }, [accessToken]);
+  }, []); // Empty deps - only runs once
 
   // Response interceptor - handle 401 errors and refresh token
   useEffect(() => {
@@ -93,11 +103,11 @@ export const AuthProvider = ({ children }) => {
       }
     );
 
-    // Cleanup: remove interceptor when component unmounts or token changes
+    // Cleanup: remove interceptor only on unmount
     return () => {
       api.interceptors.response.eject(refreshInterceptor);
     };
-  }, [accessToken]);
+  }, []); // Empty deps - only runs once
 
   const login = (token, userData) => {
     setAccessToken(token);

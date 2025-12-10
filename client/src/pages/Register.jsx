@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { validateRegisterForm } from "../utils/validation";
 import "../css/Auth.css";
+import { registerApi } from "../services/authAPI";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ function Register() {
 
   const [formErrors, setFormErrors] = useState({});
 
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -20,7 +23,7 @@ function Register() {
     });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     const { errors, isValid } = validateRegisterForm(formData);
@@ -30,8 +33,10 @@ function Register() {
       return;
     }
 
-    // TODO: Submit form to backend
-    console.log("Form is valid, submitting:", formData);
+    try {
+      await registerApi(formData);
+      navigate("/login");
+    } catch (error) {}
   };
 
   return (

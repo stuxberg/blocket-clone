@@ -34,6 +34,57 @@ router.get("/me", authenticateJWT, (req, res) => {
   });
 });
 
+router.get("/profile", authenticateJWT, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/profile", authenticateJWT, async (req, res, next) => {
+  try {
+    const allowedUpdates = ["profilePicture"];
+    const updates = {};
+
+    // Only include allowed fields
+    allowedUpdates.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/refresh", async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refresh_token;

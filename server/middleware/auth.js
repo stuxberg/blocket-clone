@@ -31,7 +31,9 @@ export const authenticateLocal = (req, res, next) => {
 };
 
 export const authenticateJWT = (req, res, next) => {
+  console.log("🔒 authenticateJWT - Auth header:", req.headers.authorization);
   passport.authenticate("jwt", { session: false }, (error, user, info) => {
+    console.log("🔒 Passport result - error:", error, "user:", user ? "present" : "null", "info:", info);
     if (error) {
       return next(error);
     }
@@ -44,6 +46,22 @@ export const authenticateJWT = (req, res, next) => {
 
     // Set user on request object
     req.user = user;
+    return next();
+  })(req, res, next);
+};
+
+// Optional authentication - doesn't fail if no token
+export const optionalAuthenticateJWT = (req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (error, user, info) => {
+    if (error) {
+      // On error, continue without user
+      return next();
+    }
+    if (user) {
+      // Set user if authentication succeeded
+      req.user = user;
+    }
+    // Continue regardless of authentication result
     return next();
   })(req, res, next);
 };

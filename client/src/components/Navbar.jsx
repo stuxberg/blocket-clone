@@ -11,10 +11,10 @@ function Navbar() {
           blocket
         </Link>
         <div className="navbar-menu">
-          <button className="navbar-item">
+          <Link to="/favorites" className="navbar-item">
             <span className="navbar-icon">🔔</span>
-            <span className="navbar-text">Notiser</span>
-          </button>
+            <span className="navbar-text">Favorites</span>
+          </Link>
           <Link to="/create" className="navbar-item">
             <span className="navbar-icon">➕</span>
             <span className="navbar-text">Ny annons</span>

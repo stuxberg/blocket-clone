@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import "../css/Mypage.css";
 import { useAuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Mypage() {
   const { user, logout } = useAuthContext();
@@ -58,51 +58,56 @@ function Mypage() {
 
           <nav className="nav">
             <div className="box">
-              <div className="box-card">
-                <div className="box-container">
-                  <div className="box-title">
-                    <img
-                      className="w-128 h-128 rounded-full max-w-none"
-                      src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
-                      alt="Profilbild för Albin"
-                    ></img>
-                    <h3>Mitt konto</h3>
-                  </div>
-                  <div className="box-info">
-                    Se dina kontouppgifter på Blocket och Vend
-                  </div>
-                </div>
-              </div>
-              <div className="box-card">
-                <div className="box-container">
-                  <div className="box-title">
-                    <img
-                      className="w-128 h-128 rounded-full max-w-none"
-                      src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
-                      alt="Profilbild för Albin"
-                    ></img>
-                    <h3>Mina annonser</h3>
-                  </div>
-                  <div className="box-info">
-                    Se dina kontouppgifter på Blocket och Vend
+              <Link to="/my-account">
+                <div className="box-card">
+                  <div className="box-container">
+                    <div className="box-title">
+                      <img
+                        className="w-128 h-128 rounded-full max-w-none"
+                        src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
+                        alt="Profilbild för Albin"
+                      ></img>
+                      <h3>Mitt konto</h3>
+                    </div>
+                    <div className="box-info">
+                      Se dina kontouppgifter på Blocket och Vend
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="box-card">
-                <div className="box-container">
-                  <div className="box-title">
-                    <img
-                      className="w-128 h-128 rounded-full max-w-none"
-                      src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
-                      alt="Profilbild för Albin"
-                    ></img>
-                    <h3>Favoriter</h3>
-                  </div>
-                  <div className="box-info">
-                    Se dina kontouppgifter på Blocket och Vend
+              </Link>
+              <Link to="/my-items">
+                <div className="box-card">
+                  <div className="box-container">
+                    <div className="box-title">
+                      <img
+                        className="w-128 h-128 rounded-full max-w-none"
+                        src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
+                        alt="Profilbild för Albin"
+                      ></img>
+                      <h3>Mina annonser</h3>
+                    </div>
+                    <div className="box-info">
+                      Se dina kontouppgifter på Blocket och Vend
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
+
+              <Link to="/favorites">
+                <div className="box-card">
+                  <div className="box-container">
+                    <div className="box-title">
+                      <img
+                        className="w-128 h-128 rounded-full max-w-none"
+                        src="https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
+                        alt="Profilbild för Albin"
+                      ></img>
+                      <h3>Favoriter</h3>
+                    </div>
+                    <div className="box-info">Se dina favoriter här</div>
+                  </div>
+                </div>
+              </Link>
             </div>
           </nav>
         </div>

@@ -16,7 +16,6 @@ function ProductPage() {
     const fetchListing = async () => {
       try {
         const data = await getListing(id);
-        console.log(data);
         setProduct(data);
       } catch (error) {
         setError("Failed to load post");

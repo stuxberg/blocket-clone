@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Product } from "./product.js";
 
-const favoriteSchema = mongoose.Schema(
+const favoriteSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,

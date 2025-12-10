@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const productSchema = mongoose.Schema(
+const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -39,10 +39,10 @@ const productSchema = mongoose.Schema(
         required: true,
       },
     },
-
     favoritesCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
   },
   { timestamps: true }
