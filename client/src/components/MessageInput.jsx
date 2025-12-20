@@ -1,14 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useSocketContext } from "../context/SocketContext";
 
-function MessageInput({ onSendMessage }) {
+function MessageInput({ onSendMessage, conversationId }) {
   const [message, setMessage] = useState("");
+  const { socket } = useSocketContext();
+  const typingTimeoutRef = useRef(null);
+  const isTypingRef = useRef(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
       onSendMessage(message);
       setMessage("");
+
+      // Stop typing indicator
+      if (socket && isTypingRef.current && conversationId) {
+        socket.emit("typing_stop", { conversationId });
+        isTypingRef.current = false;
+      }
     }
+  };
+
+  const handleChange = (e) => {
+    setMessage(e.target.value);
+
+    if (!socket || !conversationId) return;
+
+    // Emit typing start if not already typing
+    if (!isTypingRef.current && e.target.value.length > 0) {
+      socket.emit("typing_start", { conversationId });
+      isTypingRef.current = true;
+    }
+
+    // Reset typing timeout
+    clearTimeout(typingTimeoutRef.current);
+
+    // Stop typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      if (isTypingRef.current && socket && conversationId) {
+        socket.emit("typing_stop", { conversationId });
+        isTypingRef.current = false;
+      }
+    }, 2000);
   };
 
   const handleKeyDown = (e) => {
@@ -17,6 +50,16 @@ function MessageInput({ onSendMessage }) {
       handleSubmit(e);
     }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(typingTimeoutRef.current);
+      if (socket && isTypingRef.current && conversationId) {
+        socket.emit("typing_stop", { conversationId });
+      }
+    };
+  }, [socket, conversationId]);
 
   return (
     <form className="message-input-container" onSubmit={handleSubmit}>
@@ -35,9 +78,9 @@ function MessageInput({ onSendMessage }) {
       <input
         type="text"
         className="message-input"
-        placeholder=""
+        placeholder="Skriv ett meddelande..."
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
       <div className="input-hint">Shift+Retur för radbrytning</div>

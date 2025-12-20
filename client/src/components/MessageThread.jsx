@@ -1,8 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
+import { useSocketContext } from "../context/SocketContext";
 
-function MessageThread({ conversation, currentUserId, onSendMessage }) {
+function MessageThread({
+  conversation,
+  messages,
+  currentUserId,
+  onSendMessage,
+  isConnected,
+}) {
   const messagesEndRef = useRef(null);
+  const { socket } = useSocketContext();
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -10,7 +20,34 @@ function MessageThread({ conversation, currentUserId, onSendMessage }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversation?.messages]);
+  }, [messages]);
+
+  // Listen for typing indicators
+  useEffect(() => {
+    if (!socket || !conversation) return;
+
+    const handleUserTyping = ({ userId, username }) => {
+      if (userId !== currentUserId) {
+        setIsTyping(true);
+        setTypingUser(username);
+      }
+    };
+
+    const handleUserStoppedTyping = ({ userId }) => {
+      if (userId !== currentUserId) {
+        setIsTyping(false);
+        setTypingUser(null);
+      }
+    };
+
+    socket.on("user_typing", handleUserTyping);
+    socket.on("user_stopped_typing", handleUserStoppedTyping);
+
+    return () => {
+      socket.off("user_typing", handleUserTyping);
+      socket.off("user_stopped_typing", handleUserStoppedTyping);
+    };
+  }, [socket, conversation, currentUserId]);
 
   if (!conversation) {
     return (
@@ -52,94 +89,62 @@ function MessageThread({ conversation, currentUserId, onSendMessage }) {
     return `${date.getDate()} ${months[date.getMonth()]} ${time}`;
   };
 
-  const groupMessagesByDate = (messages) => {
-    const groups = [];
-    let currentGroup = null;
-
-    messages.forEach((message) => {
-      const messageDate = new Date(message.timestamp).toDateString();
-
-      if (!currentGroup || currentGroup.date !== messageDate) {
-        currentGroup = { date: messageDate, messages: [] };
-        groups.push(currentGroup);
-      }
-
-      currentGroup.messages.push(message);
-    });
-
-    return groups;
-  };
-
-  const messageGroups = groupMessagesByDate(conversation.messages);
-
   return (
     <div className="message-thread">
       <div className="message-thread-header">
         <div className="thread-user-info">
           <img
             src={
-              conversation.otherUser.avatar ||
+              conversation.otherUser.profilePicture ||
               "https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
             }
-            alt={conversation.otherUser.name}
+            alt={conversation.otherUser.username}
             className="thread-avatar"
           />
-          <h3>{conversation.otherUser.name}</h3>
+          <div>
+            <h3>{conversation.otherUser.username}</h3>
+            {isConnected && <span className="status-indicator">Online</span>}
+          </div>
         </div>
-        <button className="thread-menu-button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="5" r="2" />
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="12" cy="19" r="2" />
-          </svg>
-        </button>
       </div>
 
       <div className="message-thread-content">
-        <div className="product-context">
-          <img
-            src={
-              conversation.otherUser.avatar ||
-              "https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
-            }
-            alt=""
-            className="product-context-avatar"
-          />
-          <span className="product-context-name">(Annons)</span>
-        </div>
-
         {conversation.product && (
           <div className="product-info-card">
-            <p>{conversation.product.description}</p>
+            <img
+              src={conversation.product.images?.[0]}
+              alt={conversation.product.title}
+            />
+            <p>{conversation.product.title}</p>
           </div>
         )}
 
-        {messageGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className="message-date-group">
-            {group.messages.map((message) => (
-              <div key={message.id} className="message-wrapper">
-                <div className="message-timestamp">
-                  {formatTime(message.timestamp)}
-                </div>
-                <div
-                  className={`message ${
-                    message.senderId === currentUserId ? "sent" : "received"
-                  }`}
-                >
-                  {message.content}
-                </div>
-                {message.type === "acknowledge" && (
-                  <button className="acknowledge-button">förstår</button>
-                )}
-              </div>
-            ))}
+        {messages.map((message) => (
+          <div key={message._id || message.tempId} className="message-wrapper">
+            <div className="message-timestamp">
+              {formatTime(message.createdAt)}
+            </div>
+            <div
+              className={`message ${
+                message.sender._id === currentUserId ? "sent" : "received"
+              } ${message.tempId ? "pending" : ""}`}
+            >
+              {message.content}
+            </div>
           </div>
         ))}
+
+        {isTyping && (
+          <div className="typing-indicator">{typingUser} skriver...</div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      <MessageInput onSendMessage={onSendMessage} />
+      <MessageInput
+        onSendMessage={onSendMessage}
+        conversationId={conversation._id}
+      />
     </div>
   );
 }

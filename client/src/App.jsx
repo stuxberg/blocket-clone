@@ -7,6 +7,7 @@ import Messages from "./pages/Messages";
 import CreateListing from "./pages/CreateListing";
 import ProductPage from "./pages/ProductPage";
 import { AuthProvider, useAuthContext } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Favorites from "./pages/Favorites";
 import MyItems from "./pages/MyItems";
@@ -92,7 +93,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <SocketProvider>
+          <AppRoutes />
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );

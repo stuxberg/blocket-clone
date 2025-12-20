@@ -19,46 +19,50 @@ function ConversationList({ conversations, activeConversationId, onSelectConvers
         <h2>Meddelanden</h2>
       </div>
       <div className="conversation-list-items">
-        {conversations.map((conversation) => (
-          <div
-            key={conversation.id}
-            className={`conversation-item ${activeConversationId === conversation.id ? "active" : ""}`}
-            onClick={() => onSelectConversation(conversation.id)}
-          >
-            <div className="conversation-avatar">
-              <img
-                src={conversation.otherUser.avatar || "https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"}
-                alt={`Profilbild för ${conversation.otherUser.name}`}
-              />
-              {conversation.product && (
-                <div className="product-thumbnail">
-                  <img src={conversation.product.image} alt="" />
-                </div>
-              )}
-            </div>
-            <div className="conversation-content">
-              <div className="conversation-header">
-                <span className="conversation-name">
-                  {conversation.otherUser.name}
-                </span>
-                <span className="conversation-date">
-                  {formatDate(conversation.lastMessageDate)}
-                </span>
+        {conversations.length === 0 ? (
+          <div className="empty-state">Inga konversationer ännu</div>
+        ) : (
+          conversations.map((conversation) => (
+            <div
+              key={conversation._id}
+              className={`conversation-item ${activeConversationId === conversation._id ? "active" : ""}`}
+              onClick={() => onSelectConversation(conversation._id)}
+            >
+              <div className="conversation-avatar">
+                <img
+                  src={
+                    conversation.otherUser.profilePicture ||
+                    "https://images.blocketcdn.se/dynamic/220x220c/profile_placeholders/default"
+                  }
+                  alt={`Profilbild för ${conversation.otherUser.username}`}
+                />
+                {conversation.product && conversation.product.images?.[0] && (
+                  <div className="product-thumbnail">
+                    <img src={conversation.product.images[0]} alt="" />
+                  </div>
+                )}
               </div>
-              {conversation.product && (
-                <div className="conversation-product">
-                  {conversation.product.name}
+              <div className="conversation-content">
+                <div className="conversation-header">
+                  <span className="conversation-name">
+                    {conversation.otherUser.username}
+                  </span>
+                  <span className="conversation-date">
+                    {formatDate(conversation.lastMessageDate)}
+                  </span>
                 </div>
-              )}
-              <div className="conversation-preview">
-                {conversation.lastMessage}
+                {conversation.product && (
+                  <div className="conversation-product">
+                    {conversation.product.title}
+                  </div>
+                )}
+                <div className="conversation-preview">
+                  {conversation.lastMessage || "Ingen konversation ännu"}
+                </div>
               </div>
-              {conversation.product?.sold && (
-                <div className="product-status-badge">Såld</div>
-              )}
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
