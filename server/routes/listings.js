@@ -39,7 +39,6 @@ router.post(
 );
 
 router.get("/", optionalAuthenticateJWT, async (req, res, next) => {
-  console.log("🏠 HOME ROUTE - req.user:", req.user ? "present" : "null");
   try {
     const listings = await Product.find();
     if (req.user) {
@@ -99,22 +98,18 @@ router.get("/my-listings", authenticateJWT, async (req, res, next) => {
 });
 
 router.get("/favorites", authenticateJWT, async (req, res, next) => {
-  console.log("⭐ FAVORITES ROUTE HANDLER REACHED! req.user:", req.user);
   try {
     const userId = req.user._id;
-    console.log("⭐ Fetching favorites for userId:", userId);
     const favorites = await Favorite.find({ user: userId })
       .populate("product")
       .sort({ createdAt: -1 });
 
-    console.log("⭐ Found favorites:", favorites.length);
     const products = favorites.map((fav) => ({
       ...fav.product.toObject(),
       isFavorited: true,
     }));
     res.status(200).json(products);
   } catch (error) {
-    console.log("⭐ ERROR in favorites route:", error);
     next(error);
   }
 });

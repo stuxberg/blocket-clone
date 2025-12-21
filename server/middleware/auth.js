@@ -31,9 +31,7 @@ export const authenticateLocal = (req, res, next) => {
 };
 
 export const authenticateJWT = (req, res, next) => {
-  console.log("🔒 authenticateJWT - Auth header:", req.headers.authorization);
   passport.authenticate("jwt", { session: false }, (error, user, info) => {
-    console.log("🔒 Passport result - error:", error, "user:", user ? "present" : "null", "info:", info);
     if (error) {
       return next(error);
     }

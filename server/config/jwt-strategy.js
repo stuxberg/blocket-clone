@@ -19,7 +19,6 @@ passport.use(
   new Strategy(opts, async (jwt_payload, done) => {
     try {
       const user = await User.findOne({ _id: jwt_payload.sub });
-      console.log(user);
 
       if (!user) {
         return done(null, false, {

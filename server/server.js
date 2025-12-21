@@ -9,11 +9,16 @@ import listingsRouter from "./routes/listings.js";
 import passport from "passport";
 import "./config/local-strategy.js";
 import "./config/jwt-strategy.js";
+import { createServer } from "http";
+import { initializeSocketServer } from "./socket/socketServer.js";
 
 const startServer = async () => {
   await connectDB();
   const PORT = process.env.PORT;
   const app = express();
+
+  const httpServer = createServer(app);
+
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.json()); //middleware that check raw body, checks whether the Content-Type is application/json. parses the JSON into a javascript object
   app.use(cookieParser());
@@ -24,7 +29,8 @@ const startServer = async () => {
 
   app.use(errorHandler);
 
-  app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+  initializeSocketServer(httpServer);
+  httpServer.listen(PORT);
 };
 
 startServer();
