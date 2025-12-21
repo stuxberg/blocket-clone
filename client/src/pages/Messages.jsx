@@ -47,13 +47,27 @@ function Messages() {
       try {
         const data = await getMessages(activeConversationId);
         setMessages(data);
+
+        // Mark messages as read when opening conversation
+        if (socket) {
+          socket.emit("mark_as_read", { conversationId: activeConversationId });
+        }
+
+        // Update unread count to 0 for this conversation
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv._id === activeConversationId
+              ? { ...conv, unreadCount: 0 }
+              : conv
+          )
+        );
       } catch (error) {
         console.error("Failed to fetch messages:", error);
       }
     };
 
     fetchMessages();
-  }, [activeConversationId]);
+  }, [activeConversationId, socket]);
 
   // Socket: Join conversation room when active conversation changes
   useEffect(() => {
@@ -76,19 +90,33 @@ function Messages() {
       // Add message to current conversation
       if (conversationId === activeConversationId) {
         setMessages((prev) => [...prev, message]);
+
+        // Auto-mark as read if conversation is open
+        if (socket && message.sender._id !== user?.id) {
+          socket.emit("mark_as_read", { conversationId });
+        }
       }
 
       // Update conversation list
       setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === conversationId
-            ? {
-                ...conv,
-                lastMessage: message.content,
-                lastMessageDate: message.createdAt,
-              }
-            : conv
-        )
+        prev.map((conv) => {
+          if (conv._id === conversationId) {
+            // If message is from another user and conversation is not active, increment unread
+            const isFromOtherUser = message.sender._id !== user?.id;
+            const isNotActiveConv = conversationId !== activeConversationId;
+
+            return {
+              ...conv,
+              lastMessage: message.content,
+              lastMessageDate: message.createdAt,
+              unreadCount:
+                isFromOtherUser && isNotActiveConv
+                  ? (conv.unreadCount || 0) + 1
+                  : conv.unreadCount || 0,
+            };
+          }
+          return conv;
+        })
       );
     };
 

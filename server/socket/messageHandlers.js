@@ -66,6 +66,11 @@ export const registerMessageHandlers = (io, socket) => {
           });
         }
 
+        // Determine the other user in conversation
+        const otherUserId = isBuyer
+          ? conversation.seller._id.toString()
+          : conversation.buyer._id.toString();
+
         // Create message
         const message = await Message.create({
           conversation: conversationId,
@@ -84,8 +89,27 @@ export const registerMessageHandlers = (io, socket) => {
           tempId,
         });
 
-        // Emit to other user in conversation room
-        socket.to(`conversation:${conversationId}`).emit("new_message", {
+        // Get all sockets in the conversation room
+        const roomName = `conversation:${conversationId}`;
+        const socketsInRoom = await io.in(roomName).fetchSockets();
+        const socketIdsInRoom = new Set(socketsInRoom.map((s) => s.id));
+
+        // Emit to all sockets of the other user
+        const otherUserSockets = io.sockets.sockets;
+        for (const [socketId, sock] of otherUserSockets) {
+          if (sock.userId === otherUserId) {
+            // Only emit if this socket is NOT already in the room (to avoid duplicates)
+            if (!socketIdsInRoom.has(socketId)) {
+              sock.emit("new_message", {
+                message: message.toObject(),
+                conversationId,
+              });
+            }
+          }
+        }
+
+        // Emit to conversation room (for any users viewing it)
+        socket.to(roomName).emit("new_message", {
           message: message.toObject(),
           conversationId,
         });
@@ -133,7 +157,7 @@ export const registerMessageHandlers = (io, socket) => {
       }
 
       // Update all unread messages in this conversation not sent by current user
-      await Message.updateMany(
+      const result = await Message.updateMany(
         {
           conversation: conversationId,
           sender: { $ne: socket.userId },
@@ -142,7 +166,18 @@ export const registerMessageHandlers = (io, socket) => {
         { isRead: true }
       );
 
-      // Notify other user
+      console.log(
+        `✅ Marked ${result.modifiedCount} messages as read in conversation:${conversationId}`
+      );
+
+      // Notify the user who marked as read (so they can update their unread count)
+      socket.emit("messages_read", {
+        conversationId,
+        userId: socket.userId,
+        readAt: new Date().toISOString(),
+      });
+
+      // Notify other user in the conversation room
       socket.to(`conversation:${conversationId}`).emit("messages_read", {
         conversationId,
         userId: socket.userId,

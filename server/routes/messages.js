@@ -9,6 +9,9 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticateJWT);
 
+// Get total unread message count
+router.get("/unread-count", messageController.getUnreadCount);
+
 // Get all conversations for current user
 router.get("/conversations", messageController.getConversations);
 

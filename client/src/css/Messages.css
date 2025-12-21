@@ -90,6 +90,12 @@
 .conversation-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.conversation-meta {
+  display: flex;
   align-items: center;
   gap: 8px;
 }
@@ -410,4 +416,40 @@
 .conversation-list-items::-webkit-scrollbar-thumb:hover,
 .message-thread-content::-webkit-scrollbar-thumb:hover {
   background: #aaa;
+}
+
+/* Status Indicator */
+.status-indicator {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.status-indicator.online {
+  color: #22c55e;
+  background-color: #dcfce7;
+}
+
+.status-indicator.offline {
+  color: #6b7280;
+  background-color: #f3f4f6;
+}
+
+/* Unread Badge */
+.unread-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  line-height: 1;
 }

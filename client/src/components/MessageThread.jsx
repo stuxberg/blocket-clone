@@ -10,9 +10,14 @@ function MessageThread({
   isConnected,
 }) {
   const messagesEndRef = useRef(null);
-  const { socket } = useSocketContext();
+  const { socket, onlineUsers } = useSocketContext();
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
+
+  // Check if the OTHER user in the conversation is online
+  const isOtherUserOnline = conversation
+    ? onlineUsers.has(conversation.otherUser._id)
+    : false;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -103,7 +108,11 @@ function MessageThread({
           />
           <div>
             <h3>{conversation.otherUser.username}</h3>
-            {isConnected && <span className="status-indicator">Online</span>}
+            <span
+              className={`status-indicator ${isOtherUserOnline ? "online" : "offline"}`}
+            >
+              {isOtherUserOnline ? "Online" : "Offline"}
+            </span>
           </div>
         </div>
       </div>

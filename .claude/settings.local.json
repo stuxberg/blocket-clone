@@ -5,7 +5,12 @@
       "Bash(tree:*)",
       "Bash(cat:*)",
       "Bash(git checkout:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(kill:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

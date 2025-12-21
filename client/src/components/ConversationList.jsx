@@ -47,9 +47,16 @@ function ConversationList({ conversations, activeConversationId, onSelectConvers
                   <span className="conversation-name">
                     {conversation.otherUser.username}
                   </span>
-                  <span className="conversation-date">
-                    {formatDate(conversation.lastMessageDate)}
-                  </span>
+                  <div className="conversation-meta">
+                    <span className="conversation-date">
+                      {formatDate(conversation.lastMessageDate)}
+                    </span>
+                    {conversation.unreadCount > 0 && (
+                      <span className="unread-badge">
+                        {conversation.unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {conversation.product && (
                   <div className="conversation-product">

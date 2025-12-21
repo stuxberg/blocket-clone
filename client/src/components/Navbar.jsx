@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import "../css/Navbar.css";
 import { useAuthContext } from "../context/AuthContext";
+import { useMessagesContext } from "../context/MessagesContext";
 
 function Navbar() {
   const { user } = useAuthContext();
+  const { totalUnreadCount } = useMessagesContext();
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -19,9 +22,12 @@ function Navbar() {
             <span className="navbar-icon">➕</span>
             <span className="navbar-text">Ny annons</span>
           </Link>
-          <Link to="/messages" className="navbar-item">
+          <Link to="/messages" className="navbar-item navbar-messages">
             <span className="navbar-icon">💬</span>
             <span className="navbar-text">Meddelanden</span>
+            {totalUnreadCount > 0 && (
+              <span className="navbar-badge">{totalUnreadCount}</span>
+            )}
           </Link>
 
           {!user ? (

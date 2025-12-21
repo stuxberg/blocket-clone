@@ -13,6 +13,7 @@ export const useSocketContext = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
   const { accessToken, user } = useAuthContext();
   const [isConnected, setIsConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -31,6 +32,28 @@ export const SocketProvider = ({ children }) => {
         setIsConnected(false);
       });
 
+      // Listen for online users list
+      socketRef.current.on("online_users", ({ userIds }) => {
+        console.log("👥 Online users:", userIds);
+        setOnlineUsers(new Set(userIds));
+      });
+
+      // Listen for user coming online
+      socketRef.current.on("user_online", ({ userId }) => {
+        console.log("✅ User online:", userId);
+        setOnlineUsers((prev) => new Set([...prev, userId]));
+      });
+
+      // Listen for user going offline
+      socketRef.current.on("user_offline", ({ userId }) => {
+        console.log("❌ User offline:", userId);
+        setOnlineUsers((prev) => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
+      });
+
       // Connect the socket
       connectSocket();
 
@@ -40,6 +63,7 @@ export const SocketProvider = ({ children }) => {
         disconnectSocket();
         socketRef.current = null;
         setIsConnected(false);
+        setOnlineUsers(new Set());
       };
     }
   }, [accessToken, user]);
@@ -47,6 +71,7 @@ export const SocketProvider = ({ children }) => {
   const value = {
     socket: socketRef.current,
     isConnected,
+    onlineUsers,
   };
 
   return (

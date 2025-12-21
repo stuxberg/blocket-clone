@@ -2,6 +2,32 @@ import { Conversation } from "../models/conversation.js";
 import { Message } from "../models/Message.js";
 import { Product } from "../models/product.js";
 
+// Get total unread message count for current user
+export const getUnreadCount = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    // Get all user's conversations
+    const conversations = await Conversation.find({
+      $or: [{ buyer: userId }, { seller: userId }],
+      isActive: true,
+    }).select("_id");
+
+    const conversationIds = conversations.map((conv) => conv._id);
+
+    // Count all unread messages from other users across all conversations
+    const totalUnreadCount = await Message.countDocuments({
+      conversation: { $in: conversationIds },
+      sender: { $ne: userId },
+      isRead: false,
+    });
+
+    res.json({ unreadCount: totalUnreadCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get all conversations for the current user
 export const getConversations = async (req, res, next) => {
   try {
@@ -15,24 +41,34 @@ export const getConversations = async (req, res, next) => {
       .populate("buyer seller", "username profilePicture")
       .sort({ lastMessageDate: -1 });
 
-    // Transform to include "other user" for each conversation
-    const transformedConversations = conversations.map((conv) => {
-      const isBuyer = conv.buyer._id.toString() === userId.toString();
-      const otherUser = isBuyer ? conv.seller : conv.buyer;
+    // Transform to include "other user" and unread count for each conversation
+    const transformedConversations = await Promise.all(
+      conversations.map(async (conv) => {
+        const isBuyer = conv.buyer._id.toString() === userId.toString();
+        const otherUser = isBuyer ? conv.seller : conv.buyer;
 
-      return {
-        _id: conv._id,
-        product: conv.product,
-        otherUser: {
-          _id: otherUser._id,
-          username: otherUser.username,
-          profilePicture: otherUser.profilePicture,
-        },
-        lastMessage: conv.lastMessage,
-        lastMessageDate: conv.lastMessageDate,
-        createdAt: conv.createdAt,
-      };
-    });
+        // Count unread messages (messages from other user that current user hasn't read)
+        const unreadCount = await Message.countDocuments({
+          conversation: conv._id,
+          sender: { $ne: userId },
+          isRead: false,
+        });
+
+        return {
+          _id: conv._id,
+          product: conv.product,
+          otherUser: {
+            _id: otherUser._id,
+            username: otherUser.username,
+            profilePicture: otherUser.profilePicture,
+          },
+          lastMessage: conv.lastMessage,
+          lastMessageDate: conv.lastMessageDate,
+          unreadCount,
+          createdAt: conv.createdAt,
+        };
+      })
+    );
 
     res.json(transformedConversations);
   } catch (error) {
