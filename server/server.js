@@ -11,6 +11,7 @@ import "./config/local-strategy.js";
 import "./config/jwt-strategy.js";
 import { createServer } from "http";
 import { initializeSocketServer } from "./socket/socketServer.js";
+import messagesRouter from "./routes/messages.js";
 
 const startServer = async () => {
   await connectDB();
@@ -26,6 +27,7 @@ const startServer = async () => {
 
   app.use("/api/auth", userRouter);
   app.use("/api/listings", listingsRouter);
+  app.use("/api/messages", messagesRouter);
 
   app.use(errorHandler);
 
