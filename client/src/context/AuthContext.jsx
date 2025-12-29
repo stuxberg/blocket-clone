@@ -33,6 +33,8 @@ export const AuthProvider = ({ children }) => {
         const response = await api.post("/auth/refresh");
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
+
+        // initializeSocket(response.data.accessToken);
       } catch {
         setAccessToken(null);
         setUser(null);

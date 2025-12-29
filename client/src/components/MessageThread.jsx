@@ -94,7 +94,7 @@ function MessageThread({
             <div
               className={`message ${
                 message.sender._id === currentUserId ? "sent" : "received"
-              } ${message.tempId ? "pending" : ""}`}
+              } `}
             >
               {message.content}
             </div>

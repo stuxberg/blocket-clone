@@ -70,11 +70,6 @@ function ConversationList({
                     <span className="conversation-date">
                       {formatDate(conversation.lastMessageDate)}
                     </span>
-                    {conversation.unreadCount > 0 && (
-                      <span className="unread-badge">
-                        {conversation.unreadCount}
-                      </span>
-                    )}
                   </div>
                 </div>
                 {conversation.product && (

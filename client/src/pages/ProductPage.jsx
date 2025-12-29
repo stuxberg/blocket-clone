@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../css/ProductPage.css";
 import { getListing } from "../services/listingAPI";
+import { getOrCreateConversation } from "../services/messageAPI";
+import { useAuthContext } from "../context/AuthContext";
 
 function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // TODO: Fetch product from API
@@ -37,6 +41,22 @@ function ProductPage() {
       setCurrentImageIndex(
         (prev) => (prev - 1 + product.images.length) % product.images.length
       );
+    }
+  };
+
+  const handleContactSeller = async () => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      navigate("/login", { state: { from: `/listing/${id}` } });
+      return;
+    }
+
+    try {
+      const { conversation } = await getOrCreateConversation(id);
+      navigate("/messages", { state: { conversationId: conversation._id } });
+    } catch (error) {
+      console.error("Failed to create conversation:", error);
+      alert("Kunde inte starta konversation. Försök igen.");
     }
   };
 
@@ -112,7 +132,9 @@ function ProductPage() {
             <div className="seller-card">
               <h3>Säljare</h3>
               <p className="seller-name">{product.seller.username}</p>
-              <button className="contact-btn">Skicka meddelande</button>
+              <button className="contact-btn" onClick={handleContactSeller}>
+                Skicka meddelande
+              </button>
             </div>
           </div>
         </div>

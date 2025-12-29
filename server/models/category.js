@@ -28,7 +28,6 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Index for faster queries
-categorySchema.index({ slug: 1 });
 categorySchema.index({ isActive: 1 });
 
 export const Category = mongoose.model("Category", categorySchema);

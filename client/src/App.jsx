@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -12,15 +11,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Favorites from "./pages/Favorites";
 import MyItems from "./pages/MyItems";
 import MyAccount from "./pages/MyAccount";
-import { initializeSocket } from "./socket/socketClient.js";
+import { SocketProvider } from "./context/SocketContext";
 
 // Inner component that uses the auth context
 function AppRoutes() {
   const { loading } = useAuthContext();
-
-  useEffect(() => {
-    initializeSocket();
-  }, []);
 
   // Wait for initial auth check to complete
   if (loading) {
@@ -98,7 +93,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <SocketProvider>
+          <AppRoutes />
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );
